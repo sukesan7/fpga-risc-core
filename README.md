@@ -6,7 +6,7 @@ A synthesizable **8-bit Arithmetic Logic Unit (ALU)** and **Moore Finite State M
 ![Architecture](https://img.shields.io/badge/Architecture-RTL_Design-orange?style=flat-square)
 ![Platform](https://img.shields.io/badge/Hardware-Altera_DE2-D1251A?style=flat-square)
 
-## ⚡ System Architecture
+## System Architecture
 This project implements a modular datapath focusing on **Register Transfer Level (RTL)** logic. It decouples the arithmetic execution (ALU) from the control logic (FSM), mimicking the execution stage of a Von Neumann architecture.
 
 ### Core Modules
@@ -20,12 +20,12 @@ This project implements a modular datapath focusing on **Register Transfer Level
 * **I/O Drivers:**
     * **7-Segment Decoder:** Hexadecimal-to-7-segment mapping for real-time state visualization.
 
-## 🛠️ Implementation Details
+## Implementation Details
 * **Hardware Target:** Altera DE2 (Cyclone II EP2C35F672C6).
 * **Synthesis Tools:** Quartus II / ModelSim.
 * **Clock Domain:** Single-cycle synchronous execution (Rising Edge).
 
-## 📂 Repository Structure
+## Repository Structure
 ```text
 .
 ├── src/
@@ -37,7 +37,7 @@ This project implements a modular datapath focusing on **Register Transfer Level
 └── README.md
 ```
 
-## 🚀 Usage
+## Usage
 1.  Import the `src/` directory into a **Quartus II** project.
 2.  Set `FSM.vhd` as the Top-Level Entity.
 3.  Assign pins using the Altera DE2 `.qsf` mapping.
