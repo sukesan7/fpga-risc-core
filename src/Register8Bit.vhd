@@ -1,19 +1,26 @@
-library ieee;
-use ieee.std_logic_1164.all;
-entity storage is
-port(
-	A: in std_logic_vector(7 downto 0); -- 8bit A input
-	Resetn, Clock: in std_logic; --1 bit clock input and 1bit reset input
-	Q: out std_logic_vector(7 downto 0)); --8bit output
-end storage;
-architecture behaviour of storage is
-begin
-PROCESS(Resetn, Clock)
-	BEGIN
-		IF Resetn = '0' THEN
-			Q <= "00000000";
-		ELSIF Clock'EVENT AND Clock = '1' THEN
-			Q <= A;
-		END IF;	
-	END PROCESS;
-end behaviour;
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
+
+ENTITY Register8Bit IS
+    PORT(
+        clk      : IN  std_logic;
+        rst_n    : IN  std_logic; -- Active Low Reset
+        data_in  : IN  std_logic_vector(7 DOWNTO 0);
+        data_out : OUT std_logic_vector(7 DOWNTO 0)
+    );
+END Register8Bit;
+
+ARCHITECTURE RTL OF Register8Bit IS
+BEGIN
+    PROCESS(clk, rst_n)
+    BEGIN
+        -- Asynchronous Active-Low Reset
+        IF rst_n = '0' THEN
+            data_out <= (others => '0');
+            
+        -- Synchronous Loading on Rising Edge
+        ELSIF rising_edge(clk) THEN
+            data_out <= data_in;
+        END IF; 
+    END PROCESS;
+END RTL;
