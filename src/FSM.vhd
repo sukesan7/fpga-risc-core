@@ -1,117 +1,51 @@
-library ieee;
-use ieee.std_logic_1164.all;
-entity FSM is
-	port
-	(
-		clk : in std_logic;
-		data_in : in std_logic;
-		reset : in std_logic;
-		student_id : out std_logic_vector(3 downto 0);
-		current_state : out std_logic_vector(3 DOWNTO 0));
-end FSM;
+LIBRARY ieee;
+USE ieee.std_logic_1164.all;
 
-architecture fsm of FSM is
-	type state_type is (s0, s1, s2, s3, s4, s5, s6, s7, s8);
-	signal yfsm : state_type;
+ENTITY FSM_Controller IS
+    PORT(
+        clk           : IN  std_logic;
+        rst_n         : IN  std_logic;
+        trigger       : IN  std_logic;
+        current_state : OUT std_logic_vector(3 DOWNTO 0)
+    );
+END FSM_Controller;
 
-	begin
-		process (clk, reset)
-		begin
-			if reset = '1' then
-				yfsm <= s0;
-			elsif (clk'EVENT AND clk = '1') then
-				case yfsm is 
-					when s0 => 
-						case data_in is
-							when '0' => yfsm <= s0;
-							when '1' => yfsm <= s2;
-							when others => yfsm <= s0;
-						end case;
-					when s2 =>
-						case data_in is
-							when '0' => yfsm <= s2;
-							when '1' => yfsm <= s4;
-							when others => yfsm <= s2;
-						end case;
-					when s4 =>
-						case data_in is
-							when '0' => yfsm <= s4;
-							when '1' => yfsm <= s6;
-							when others => yfsm <= s4;
-						end case;
-					when s6 =>
-						case data_in is
-							when '0' => yfsm <= s6;
-							when '1' => yfsm <= s8;
-							when others => yfsm <= s6;
-						end case;
-					when s8 =>
-						case data_in is
-							when '0' => yfsm <= s8;
-							when '1' => yfsm <= s7;
-							when others => yfsm <= s8;
-						end case;
-					when s7 =>
-						case data_in is
-							when '0' => yfsm <= s7;
-							when '1' => yfsm <= s5;
-							when others => yfsm <= s7;
-						end case;
-					when s5 =>
-						case data_in is
-							when '0' => yfsm <= s5;
-							when '1' => yfsm <= s3;
-							when others => yfsm <= s5;
-						end case;
-					when s3 =>
-						case data_in is
-							when '0' => yfsm <= s3;
-							when '1' => yfsm <= s1;
-							when others => yfsm <= s3;
-						end case;
-					when s1 =>
-						case data_in is
-							when '0' => yfsm <= s1;
-							when '1' => yfsm <= s0;
-							when others => yfsm <= s1;
-						end case;
-				end case;
-			end if;
-		end process;
-		
-		process (yfsm, data_in)
-			begin
-				case yfsm is
-					when s0 => 
-						student_id <= "0101"; --5 
-						current_state <= "0000";
-					when s2 =>
-						student_id <= "0000"; --0 
-						current_state <= "0010";
-					when s4 =>
-						student_id <= "0001"; --1 
-						current_state <= "0100";
-					when s6 =>
-						student_id <= "0001"; --0 
-						current_state <= "0110";
-					when s8 =>
-						student_id <= "1001"; --9 
-						current_state <= "1000";
-					when s7 =>
-						student_id <= "0010"; --2 
-						current_state <= "0111";
-					when s5 =>
-						student_id <= "0000"; --0 
-						current_state <= "0101";
-					when s3 =>
-						student_id <= "0110"; --6 
-						current_state <= "0011";
-					when s1 =>
-						student_id <= "0100"; --4
-						current_state <= "0001";
-					when others =>
-						student_id <= "1110"; --14 / E
-						current_state <= "1110";
-				end case;
-		end process;
-end;
+ARCHITECTURE Behavioral OF FSM_Controller IS
+    TYPE state_type IS (S_IDLE, S_LOAD, S_EXEC, S_STORE); 
+    SIGNAL state_reg, state_next : state_type;
+BEGIN
+
+    -- State Register
+    PROCESS(clk, rst_n)
+    BEGIN
+        IF rst_n = '0' THEN
+            state_reg <= S_IDLE;
+        ELSIF rising_edge(clk) THEN
+            state_reg <= state_next;
+        END IF;
+    END PROCESS;
+
+    -- Next State Logic
+    PROCESS(state_reg, trigger)
+    BEGIN
+        state_next <= state_reg;
+        current_state <= "0000";
+
+        CASE state_reg IS
+            WHEN S_IDLE =>
+                current_state <= "0001"; -- Display 1
+                IF trigger = '1' THEN state_next <= S_LOAD; END IF;
+            WHEN S_LOAD =>
+                current_state <= "0010"; -- Display 2
+                IF trigger = '1' THEN state_next <= S_EXEC; END IF;
+            WHEN S_EXEC =>
+                current_state <= "0100"; -- Display 4
+                state_next <= S_STORE;   -- Auto transition
+            WHEN S_STORE =>
+                current_state <= "1000"; -- Display 8
+                IF trigger = '0' THEN state_next <= S_IDLE; END IF;
+            WHEN OTHERS =>
+                state_next <= S_IDLE;
+        END CASE;
+    END PROCESS;
+END Behavioral;
